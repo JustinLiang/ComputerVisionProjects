@@ -18,5 +18,7 @@ function CannyEdgeDetector()
     
     pyramid = ComputeDifferenceOfGaussian(pyramid);
     ShowPyramid(pyramid);
-
+    
+    localExtrema = DetectLocalExtrema(pyramid);
+    test = 5;
 end

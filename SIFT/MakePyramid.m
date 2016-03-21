@@ -3,7 +3,7 @@
 % in the template
 function[pyramid] = MakePyramid(im, octaves)
     SCALE = 1.6;
-    SCALES_PER_OCTAVE = 3;
+    SCALES_PER_OCTAVE = 4;
     K = sqrt(2);
     RATIO = 0.5;
 
