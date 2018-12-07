@@ -43,19 +43,7 @@ function ExtractColorByHSV()
     imhist(vIm);
     title('Value Dist');
     
-    % Get hue, saturation, value masks
-    [hThresholdLow, hThresholdHigh, sThresholdLow, sThresholdHigh, ... 
-        vThresholdLow, vThresholdHigh] = GetThresholds(color);
-    
-    % Apply masks
-    mask = (sIm >= sThresholdLow) & (sIm <= sThresholdHigh);
-    mask = mask & (vIm >= vThresholdLow) & (vIm <= vThresholdHigh); 
-    if hThresholdLow < 0 % If hue is red
-        mask = mask & (hIm <= hThresholdHigh);
-        mask = mask | ((hIm >= -hThresholdLow) & (hIm <= 1));
-    else
-        mask = mask & (hIm >= hThresholdLow) & (hIm <= hThresholdHigh);
-    end
+    mask = ApplyHsvThresholds(hIm,sIm,vIm,color);
     
     % Plot original image
     subplot(3,3,2);
@@ -65,15 +53,31 @@ function ExtractColorByHSV()
     imwrite(mask, 'processed_image.jpg');
 end
 
+
+function mask = ApplyHsvThresholds(hIm,sIm,vIm,color)
+    % Get h, s, v masks
+    [hLow, hHigh, sLow, sHigh, ...
+        vLow, vHigh] = GetThresholds(color);
+
+    mask = ((sIm > sLow) & (sIm < sHigh))...
+        & ((vIm > vLow) & (vIm < vHigh));
+    % Apply masks (use bitwise AND if continuous or bitwise OR if discontinuous)
+    if (hLow>hHigh)
+        mask = mask & ((hIm > hLow) | (hIm < hHigh));
+    else
+        mask = mask & ((hIm > hLow) & (hIm < hHigh));
+    end
+end
+
 % GetThresholdValues - Gets the threshold values for the different colors
 function [hThresholdLow, hThresholdHigh, sThresholdLow, sThresholdHigh, ... 
         vThresholdLow, vThresholdHigh]  = GetThresholds(color)
 
     % Hue, saturation, value thresholds
     switch color
-        case 'red' % Red goes from 0.9 to 1 and 0 to 0.2, thus use neg
-            hThresholdLow = -359/360;
-			hThresholdHigh = 19/360;
+        case 'red' % Red is discontinuous, swap low and high thresholds
+            hThresholdLow = 350/360; % Cool red
+            hThresholdHigh = 19/360; % Warm red
 			sThresholdLow = 0.05;
 			sThresholdHigh = 1;
 			vThresholdLow = 0;    
