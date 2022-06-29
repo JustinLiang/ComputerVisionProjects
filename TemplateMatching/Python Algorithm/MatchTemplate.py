@@ -58,8 +58,8 @@ def FindTemplate(pyramid, template, threshold):
 
     for index, im in enumerate(pyramid):
         nccImage = ncc.normxcorr2D(im, template)       # Get the normalized correlation of the template onto the im
-        rectWidth = newTemplateWidth * (0.75 ** index)  # Update template rectangle size
-        rectHeight = newTemplateHeight * (0.75 ** index) # Update template rectangle size
+        rectWidth = newTemplateWidth / (0.75 ** index)  # Update template rectangle size
+        rectHeight = newTemplateHeight / (0.75 ** index) # Update template rectangle size
         for row in range(nccImage.shape[0]):
             for col in range(nccImage.shape[1]):
                 if(nccImage[row][col] > threshold):
